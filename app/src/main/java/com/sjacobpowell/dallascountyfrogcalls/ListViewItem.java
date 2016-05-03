@@ -1,14 +1,18 @@
 package com.sjacobpowell.dallascountyfrogcalls;
 
+import android.media.MediaPlayer;
+
 /**
  * Created by S Jacob Powell on 5/2/2016.
  */
 public class ListViewItem {
     private String text;
+    private MediaPlayer sound;
     private int type;
 
-    public ListViewItem(String text, int type) {
+    public ListViewItem(String text, MediaPlayer sound, int type) {
         this.text = text;
+        this.sound = sound;
         this.type = type;
     }
 
@@ -16,15 +20,11 @@ public class ListViewItem {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public MediaPlayer getSound() {
+        return sound;
     }
 
     public int getType() {
         return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 }

@@ -12,11 +12,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ListView listView;
-    private String[] herpNames;
-    private MediaPlayer[] herpSounds;
+    private ListViewItem[] herps;
     private int currentSoundIndex = -1;
 
     @Override
@@ -26,102 +27,65 @@ public class MainActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-        final ListViewItem[] items = new ListViewItem[40];
+        List<ListViewItem> herpList = new ArrayList<>();
+        herpList.add(new ListViewItem("Genus Hylidae\n(Treefrogs)", null, CustomAdapter.TYPE_TITLE));
+            herpList.add(new ListViewItem("Cricket Frog\n(Acris crepitans blanchardi)", MediaPlayer.create(this, R.raw.cricketfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Cope's Gray Treefrog\n(Hyla chrysoscelis)", MediaPlayer.create(this, R.raw.copesgraytreefrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Gray Treefrog\n(Hyla versicolor)", MediaPlayer.create(this, R.raw.graytreefrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Green Treefrog\n(Hyla cinerea)", MediaPlayer.create(this, R.raw.greentreefrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Spotted Chorus Frog\n(Pseudacris clarkii)", MediaPlayer.create(this, R.raw.spottedchorusfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Strecker's Chorus Frog\n(Pseudacris streckeri)", MediaPlayer.create(this, R.raw.streckerschorusfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Upland Chorus Frog\n(Pseudacris triseriata feriarum)", MediaPlayer.create(this, R.raw.uplandchorusfrog), CustomAdapter.TYPE_HERP_ROW));
+        herpList.add(new ListViewItem("Genus Bufonidae\n(Toads)", null, CustomAdapter.TYPE_TITLE));
+            herpList.add(new ListViewItem("Green Toad\n(Bufo debilis)", MediaPlayer.create(this, R.raw.greentoad), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Red Spotted Toad\n(Bufo punctatus)", MediaPlayer.create(this, R.raw.redspottedtoad), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Texas Toad\n(Bufo speciosus)", MediaPlayer.create(this, R.raw.texastoad), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Gulf Coast Toad\n(Bufo valliceps)", MediaPlayer.create(this, R.raw.gulfcoasttoad), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Woodhouse's Toad\n(Bufo woodhousii)", MediaPlayer.create(this, R.raw.woodhousestoad), CustomAdapter.TYPE_HERP_ROW));
+        herpList.add(new ListViewItem("Genus Pelobatidae\n(Spadefoot Toads)", null, CustomAdapter.TYPE_TITLE));
+            herpList.add(new ListViewItem("Hurter's Spadefoot Toad\n(Scaphiopus hurterii)", MediaPlayer.create(this, R.raw.hurtersspadefoottoad), CustomAdapter.TYPE_HERP_ROW));
+        herpList.add(new ListViewItem("Genus Ranidae\n(True Frogs)", null, CustomAdapter.TYPE_TITLE));
+            herpList.add(new ListViewItem("Rio Grande Leopard Frog\n(Rana berlandieri)", MediaPlayer.create(this, R.raw.riograndeleopardfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Plains Leopard Frog\n(Rana blairi)", MediaPlayer.create(this, R.raw.plainsleopardfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Bull Frog\n(Rana catesbeiana)", MediaPlayer.create(this, R.raw.bullfrog), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem("Southern Leopard Frog\n(Rana sphenocephala)", MediaPlayer.create(this, R.raw.southernleopardfrog), CustomAdapter.TYPE_HERP_ROW));
+        herpList.add(new ListViewItem("Genus Microhylidae\n(Narrowmouth Toads)", null, CustomAdapter.TYPE_TITLE));
+            herpList.add(new ListViewItem("Eastern Narrowmouth Toad\n(Gastrophryne carolinensis)", MediaPlayer.create(this, R.raw.easternnarrowmouthttoad), CustomAdapter.TYPE_HERP_ROW));
+            herpList.add(new ListViewItem( "Great Plains Narrowmouth Toad\n(Gastrophryne olivacea)", MediaPlayer.create(this, R.raw.greatplainsnarrowmouthtoad), CustomAdapter.TYPE_HERP_ROW));
 
-        for (int i = 0; i < items.length; i++) {
-           if (i % 2 == 0) {
-                items[i] = new ListViewItem("EVEN " + i, CustomAdapter.TYPE_HERP_ROW);
-            } else {
-                items[i] = new ListViewItem("ODD " + i, CustomAdapter.TYPE_TITLE);
-            }
+        herps = new ListViewItem[herpList.size()];
+        for(int i = 0; i < herpList.size(); i++) {
+            herps[i] = herpList.get(i);
         }
 
-        CustomAdapter customAdapter = new CustomAdapter(this, R.id.text, items);
+        CustomAdapter customAdapter = new CustomAdapter(this, R.id.text, herps);
         listView.setAdapter(customAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView adapterView, View view, int i, long l) {
-                Toast.makeText(getBaseContext(), items[i].getText(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView adapterView, View view, int index, long l) {
+                if(herps[index].getSound() == null) return;
+                playSound(index);
+                Toast.makeText(getBaseContext(),herps[index].getText(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
-//        herpNames = new String[] {
-//                //Genus Hylidae (Treefrogs)
-//                "Cricket Frog\n(Acris crepitans blanchardi)",
-//                "Cope's Gray Treefrog\n(Hyla chrysoscelis)",
-//                "Gray Treefrog\n(Hyla versicolor)",
-//                "Green Treefrog\n(Hyla cinerea)",
-//                "Spotted Chorus Frog\n(Pseudacris clarkii)",
-//                "Strecker's Chorus Frog\n(Pseudacris streckeri)",
-//                "Upland Chorus Frog\n(Pseudacris triseriata feriarum)",
-//
-//                //Genus Bufonidae (Toads)
-//                "Green Toad\n(Bufo debilis)",
-//                "Red Spotted Toad\n(Bufo punctatus)",
-//                "Texas Toad\n(Bufo speciosus)",
-//                "Gulf Coast Toad\n(Bufo valliceps)",
-//                "Woodhouse's Toad\n(Bufo woodhousii)",
-//
-//                //Genus Pelobatidae (Spadefoot Toads)
-//                "Hurter's Spadefoot Toad\n(Scaphiopus hurterii)",
-//
-//                //Genus Ranidae (True Frogs)
-//                "Rio Grande Leopard Frog\n(Rana berlandieri)",
-//                "Plains Leopard Frog\n(Rana blairi)",
-//                "Bull Frog\n(Rana catesbeiana)",
-//                "Southern Leopard Frog\n(Rana sphenocephala)",
-//
-//                //Genus Microhylidae (Narrowmouth Toads)
-//                "Eastern Narrowmouth Toad\n(Gastrophryne carolinensis)",
-//                "Great Plains Narromouth Toad\n(Gastrophryne olivacea)"
-//        };
-//        herpSounds = new MediaPlayer[] {
-//                //Genus Hylidae (Treefrogs)
-//                MediaPlayer.create(this, R.raw.cricketfrog),
-//                MediaPlayer.create(this, R.raw.copesgraytreefrog),
-//                MediaPlayer.create(this, R.raw.graytreefrog),
-//                MediaPlayer.create(this, R.raw.greentreefrog),
-//                MediaPlayer.create(this, R.raw.spottedchorusfrog),
-//                MediaPlayer.create(this, R.raw.streckerschorusfrog),
-//                MediaPlayer.create(this, R.raw.uplandchorusfrog),
-//
-//                //Genus Bufonidae (Toads)
-//                MediaPlayer.create(this, R.raw.greentoad),
-//                MediaPlayer.create(this, R.raw.redspottedtoad),
-//                MediaPlayer.create(this, R.raw.texastoad),
-//                MediaPlayer.create(this, R.raw.gulfcoasttoad),
-//                MediaPlayer.create(this, R.raw.woodhousestoad),
-//
-//                //Genus Pelobatidae (Spadefoot Toads)
-//                MediaPlayer.create(this, R.raw.hurtersspadefoottoad),
-//
-//                //Genus Ranidae (True Frogs)
-//                MediaPlayer.create(this, R.raw.riograndeleopardfrog),
-//                MediaPlayer.create(this, R.raw.plainsleopardfrog),
-//                MediaPlayer.create(this, R.raw.bullfrog),
-//                MediaPlayer.create(this, R.raw.southernleopardfrog),
-//
-//                //Genus Microhylidae (Narrowmouth Toads)
-//                MediaPlayer.create(this, R.raw.easternnarrowmouthttoad),
-//                MediaPlayer.create(this, R.raw.greatplainsnarrowmouthtoad),
-//        };
-//
-//
-//
-//        // Define a new Adapter
-//        // First parameter - Context
-//        // Second parameter - Layout for the row
-//        // Third parameter - ID of the TextView to which the data is written
-//        // Forth - the Array of data
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.herp_row, R.id.my_text, herpNames);
-//        listView.setAdapter(adapter);
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int index, long id) {
-//                playSound(index);
-//                Toast.makeText(getApplicationContext(), (String) listView.getItemAtPosition(index) , Toast.LENGTH_SHORT).show();
-//            }
-//        });
+    public void playSound(int index) {
+        MediaPlayer currentSound;
+        try {
+            if(currentSoundIndex != -1) {
+                currentSound = herps[currentSoundIndex].getSound();
+                currentSound.stop();
+                currentSound.prepare();
+            }
+            currentSoundIndex = index;
+            currentSound = herps[currentSoundIndex].getSound();
+            currentSound.setLooping(true);
+            currentSound.start();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Error playing sound" , Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -141,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.stop_playing) {
             try {
-                MediaPlayer currentSound  = herpSounds[currentSoundIndex];
+                MediaPlayer currentSound  = herps[currentSoundIndex].getSound();
                 currentSound.stop();
                 currentSound.prepare();
             } catch (IOException e) {
@@ -153,23 +117,4 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    public void playSound(int index) {
-        MediaPlayer currentSound;
-        try {
-            if(currentSoundIndex != -1) {
-                currentSound = herpSounds[currentSoundIndex];
-                currentSound.stop();
-                currentSound.prepare();
-            }
-            currentSoundIndex = index;
-            currentSound = herpSounds[currentSoundIndex];
-            currentSound.setLooping(true);
-            currentSound.start();
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Error playing sound" , Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-    }
-
 }
